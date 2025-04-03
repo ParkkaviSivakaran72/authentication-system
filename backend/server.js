@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json())
 app.use(cors({credentials:true}))
 app.use(cookieParser())
-
+app.use(express.urlencoded({ extended: true }));
 app.get('/', (req,res) => {
     res.json("Api is working")
 })

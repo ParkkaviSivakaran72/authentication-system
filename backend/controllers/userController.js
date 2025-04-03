@@ -81,3 +81,57 @@ export const logout = async (req,res) => {
     }
 }
 
+export const verificationOTP = async (req,res) => {
+    try {
+        const {userId} = req.body;
+    const user = await userModel.findById(userId);
+    if(user.isVerified){
+        return res.json({success:false,message:"Your account is already verified."})
+    }
+    const otp = Math.floor(100000+Math.random()*900000)
+    user.verifyOTP=(String)(otp);
+    user.verifyOTPexpiresAt = Date.now() + 24 * 3600 * 1000;
+    user.save();
+
+    const mailOption = {
+        from:process.env.SENDER_EMAIL,
+        to:user.email,
+        subject:"Your verification OTP here!",
+        text:`Successfully get your verification OTP.your OTP is ${otp} `
+    }
+    await transporter.sendMail(mailOption);
+    return res.json({success:true,message:"Verification sent successfully!"})
+    } catch (error) {
+        console.log(error)
+        return res.json({success:false,message:error})
+    }
+}
+
+export const verifyEmail = async (req,res) => {
+    const {userId,otp} = req.body;
+    console.log(otp)
+    if(!userId || !otp){
+        return res.json({success:false,message:"userId or otp does not exist"})
+    }
+    try {
+        const user = await userModel.findById(userId);
+        if(!user){
+            return res.json({success:false,message:"User not found!"})
+        }
+        if(user.verifyOTP==='' || user.verifyOTP !== otp){
+            return res.json({success:false,message:"OTP is Invalid!"})
+        }
+        if(verifyOTPexpiresAt < Date.now()){
+            return res.json({success:false,message:"OTP is expired!"})
+        }
+        user.isVerified = true;
+        user.verifyOTP = "";
+        user.verifyOTPexpiresAt = 0;
+        await user.save();
+        return res.json({success:true,message:"Email verification successfully!"})
+    } catch (error) {
+        console.log(error)
+        return res.json({success:false,message:error.message})
+        
+    }
+}
