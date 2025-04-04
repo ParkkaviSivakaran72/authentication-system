@@ -5,9 +5,9 @@ import transporter from "../config/nodemailer.js";
 
 
 export const register = async (req, res) => {
-    const { userName, email, password } = req.body;
+    const { userName, email, password, confirmPassword } = req.body;
 
-    if (!userName || !email || !password) {
+    if (!userName || !email || !password || !confirmPassword) {
         return res.json({ success: false, message: "Enter all details properly." });
     }
     try {
@@ -16,7 +16,8 @@ export const register = async (req, res) => {
             return res.json({ success: false, message: "Email already exists" });
         }
         const hashedPassword = await bcrypt.hash(password, 10)
-        const user = new userModel({ userName, email, password: hashedPassword });
+        const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10)
+        const user = new userModel({ userName, email, password: hashedPassword, confirmPassword:hashedConfirmPassword });
         user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
         res.cookie('token', token, {
@@ -178,7 +179,7 @@ export const resetOTP = async (req,res) => {
 }
 
 export const resetPassword  = async (req,res) => {
-    const {email, otp, newPassword} = req.body;
+    const {email, otp, newPassword,confirmNewPassword} = req.body;
     if(!email || !otp || !newPassword){
         res.json({success:false,message:"email,otp,newPassword are required"});
 
@@ -186,18 +187,23 @@ export const resetPassword  = async (req,res) => {
     try {
         const user = await userModel.findOne({email});
         if(!user){
-            res.json({success:false,message:"User not found!"})
+            return res.json({success:false,message:"User not found!"})
         }
         if(user.resetOTP === "" || user.resetOTP === otp){
-            res.json({success:false,message:"OTP is Invalid!"})
+            return res.json({success:false,message:"OTP is Invalid!"})
 
         }
         if(user.resetOTPexpireAt < Date.now()){
-            res.json({success:false,message:"OTP is expired!"})
+            return res.json({success:false,message:"OTP is expired!"})
 
         }
+        if(newPassword !== confirmNewPassword){
+            return res.json({success:false,message:"Confirm new password is mismatch with new password!"})
+        }
         const hashedPassword = await bcrypt.hash(newPassword,10);
+        const hashedConfirmPassword = await bcrypt.hash(confirmNewPassword,10);
         user.password = hashedPassword;
+        user.confirmNewPassword = hashedConfirmPassword;
         user.resetOTP = "";
         user.resetOTPexpireAt = 0;
         await user.save();
