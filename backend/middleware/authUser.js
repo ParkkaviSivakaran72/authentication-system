@@ -1,25 +1,45 @@
 import jwt from "jsonwebtoken";
 
-const authUser = async(req,res,next) => {
-    const {token} = req.cookies;
-    
-    if(!token){
-        return res.json({success:false,message:"No authorized. Please login again!"})
-    }
+const authUser = async (req, res, next) => {
     try {
-        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET)
+        // Check for token in cookies first
+        let token = req.cookies.token;
         
-        if(tokenDecode.id){
-            req.user = {userId:tokenDecode.id};
+        // If no token in cookies, check the Authorization header
+        if (!token) {
+            const authHeader = req.headers.authorization;
+            if (authHeader && authHeader.startsWith("Bearer ")) {
+                token = authHeader.split(" ")[1];
+            }
         }
-        else{
-            return res.json({success:false,message:"No authorized. Please login again!"})
+
+        // If still no token, send an error response
+        if (!token) {
+            return res.json({ success: false, message: "Not authorized, please log in again" });
         }
-        next();
+
+        // Verify the token
+        const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Check if the token contains the user ID
+        if (tokenDecode && tokenDecode.userId) {
+            req.user = { userId: tokenDecode.userId };
+            next();
+        } else {
+            return res.json({ success: false, message: "Invalid token, please log in again" });
+        }
     } catch (error) {
-        console.log(error)
-        return res.json({success:false,message:error.message})
+        console.log("Authentication error:", error.message);
+
+        // Handle specific JWT errors
+        if (error.name === "TokenExpiredError") {
+            return res.json({ success: false, message: "Session expired, please log in again" });
+        } else if (error.name === "JsonWebTokenError") {
+            return res.json({ success: false, message: "Invalid token, please log in again" });
+        } else {
+            return res.json({ success: false, message: "Authentication failed" });
+        }
     }
-}
+};
 
 export default authUser;

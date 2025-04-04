@@ -19,11 +19,12 @@ export const register = async (req, res) => {
         const hashedConfirmPassword = await bcrypt.hash(confirmPassword, 10)
         const user = new userModel({ userName, email, password: hashedPassword, confirmPassword:hashedConfirmPassword });
         user.save();
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' })
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
+        
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            secure: true,
+            sameSite:  "None" ,
             maxAge: 7 * 24 * 3600 * 1000
         })
         const mailOptions = {

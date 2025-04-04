@@ -11,7 +11,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const {backend_url,loggedIn,setLoggedIn} = useContext(AppContext);
+  const {backend_url,loggedIn,setLoggedIn,getUserData} = useContext(AppContext);
 
   const onSubmitHanlder = async (e) => {
     try {
@@ -21,6 +21,7 @@ const Signup = () => {
       console.log(data)
       if(data.success){
         setLoggedIn(true)
+        getUserData();
         navigate('/')
       }
       else{
