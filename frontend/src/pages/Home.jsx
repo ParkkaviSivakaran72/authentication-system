@@ -5,7 +5,7 @@ import Header from '../components/header.jsx'
 
 const Home = () => {
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="min-h-screen w-full flex flex-col bg-cover bg-center">
         <Navabar />
         <Header />
     </div>
