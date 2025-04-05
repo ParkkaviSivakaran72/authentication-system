@@ -20,7 +20,7 @@ export const register = async (req, res) => {
         const user = new userModel({ userName, email, password: hashedPassword, confirmPassword:hashedConfirmPassword });
         user.save();
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
-        
+        // console.log(token)
         res.cookie('token', token, {
             httpOnly: true,
             secure: true,
@@ -35,7 +35,7 @@ export const register = async (req, res) => {
         }
         await transporter.sendMail(mailOptions);
          
-        return res.json({success:true,messgae:"Registered successfully!"})
+        return res.json({success:true,messgae:"Registered successfully!",userName,token})
     } catch (error) {
         return res.json({ success: false, message: error.message })
 
@@ -63,7 +63,7 @@ export const login = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             maxAge: 7 * 24 * 3600 * 1000
         });
-        return res.json({success:true,message:"Login successfully!"});
+        return res.json({success:true,message:"Login successfully!",token});
 
     } catch (error) {
         return res.json({success:false,message:error.message});

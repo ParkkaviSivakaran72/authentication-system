@@ -1,27 +1,21 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets.js";
 import axios from "axios";
 import { AppContext } from "../context/Appcontext.jsx";
 import { toast } from "react-toastify";
 
 const Header = () => {
-  const { userData, setLoggedIn, setUserData, setToken } = useContext(AppContext);
+    const navigate = useNavigate();
+  const { userData, setLoggedIn, setUserData, setToken } =useContext(AppContext);
+  
 
   // Logout function
-  const handleLogout = async () => {
-    try {
-      // Perform any necessary backend logout steps if needed
-      await axios.post("/api/logout");
-      // Clear localStorage and context
-      localStorage.removeItem("token");
-      setToken("");
-      setUserData(null);
-      setLoggedIn(false);
-      toast.success("Logged out successfully!");
-    } catch (error) {
-      console.log("Logout failed:", error.message);
-      toast.error("Logout failed. Please try again.");
-    }
+  const handleLogout = () => {
+    localStorage.removeItem("uToken");
+    localStorage.removeItem("username");
+    setToken(null);
+    navigate("/login");
   };
 
   return (

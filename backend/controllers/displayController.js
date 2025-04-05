@@ -3,10 +3,11 @@ import userModel from "../models/userModel.js";
 export const getUserData = async (req, res) => {
     try {
         // Get the userId from the authenticated request object
-        const { userId } = req.user;
+        // const { userName } = req.body;
 
         // Find the user by ID, excluding the password field
-        const user = await userModel.findById(userId).select("-password");
+        const user = await userModel.findById(req.body.userId);
+        console.log(req.body.userId)
 
         // Check if the user was found
         if (!user) {
@@ -16,10 +17,7 @@ export const getUserData = async (req, res) => {
         // Return the user data
         return res.json({
             success: true,
-            userData: {
-                userName: user.userName,
-                isVerified: user.isVerified,
-            },
+            user
         });
     } catch (error) {
         console.log("Error fetching user data:", error.message);

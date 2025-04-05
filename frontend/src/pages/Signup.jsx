@@ -11,19 +11,27 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const {backend_url,loggedIn,setLoggedIn,getUserData} = useContext(AppContext);
+  const {backend_url,loggedIn,setLoggedIn,getUserData,token,setToken} = useContext(AppContext);
 
   const onSubmitHanlder = async (e) => {
+    e.preventDefault()
     try {
-      e.preventDefault();
-      console.log(backend_url)
-      const {data} = await axios.post(`${backend_url}/api/user/register`,{userName,email,password,confirmPassword})
-      console.log(data)
-      if(data.success){
-        setLoggedIn(true)
-        getUserData();
-        navigate('/')
-      }
+      const data = {
+        userName: userName,
+        email: email,
+        password: password,
+        confirmPassword:confirmPassword
+      };
+    
+      const { data: response } = await axios.post(`${backend_url}/api/user/register`, data , { withCredentials: true });
+      console.log(response)
+      if (response.success) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("userName", response.userName);
+        setToken(response.token);
+        console.log(response.token)
+        navigate("/");
+      } 
       else{
         toast.error(data.message)
       }

@@ -9,22 +9,28 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {backend_url,setLoggedIn,loggedIn,getUserData} = useContext(AppContext)
+  const {backend_url,setLoggedIn,loggedIn,getUserData,token,setToken} = useContext(AppContext)
+  
 
   const onSubmitHandler = async (e) => {
+    e.preventDefault();
     try {
-      e.preventDefault();
-      console.log(backend_url)
-      const {data} = await axios.post(`${backend_url}/api/user/login`,{email,password})
-      console.log(data)
-      if(data.success){
-        // toast.success("Logged In successfully.")
-        setLoggedIn(true)
-        getUserData();
-        navigate('/')
+      const data = {
+        email:email,
+        password:password
       }
-      else{
-        toast.error(data.message)
+      const { data: response } = await axios.post(
+        `${backend_url}/api/user/login`,
+        data
+      );
+      console.log(response)
+      if (response.success) {
+        localStorage.setItem("token", response.token);
+        setToken(response.token);
+        console.log(response)
+        navigate("/"); // Redirect to home
+      } else {
+        toast.error(response.message);
       }
     } catch (error) {
       toast.error(error)

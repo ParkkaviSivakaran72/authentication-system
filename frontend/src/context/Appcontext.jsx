@@ -21,32 +21,53 @@ export const AppContextProvider = (props) => {
     }
   }, []);
 
-  const getUserData = async () => {
+  // const getAuthUser = async () => {
+  //   try {
+  //     console.log("Checking authentication with token:", token);
+  //     const response = await axios.get(`${backend_url}/api/user/is-authenticated`, {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     console.log("Authentication response:", response.data);
+  //     if (response.data.success) {
+  //       setUserData();
+  //       setLoggedIn(true);
+  //     } else {
+  //       toast.error(response.data.message);
+  //       setLoggedIn(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Authentication error:", error);
+  //     toast.error("Authentication failed. Please log in again.");
+  //   }
+  // };
+
+  const fetchUser = async () => {
     try {
+      // Ensure the token is correctly prefixed with "Bearer"
       const { data } = await axios.get(`${backend_url}/api/display/data`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Add space after Bearer
         },
-        withCredentials: true, // Important for cookie-based authentication
       });
 
       if (data.success) {
-        setUserData(data.userData);
-        setLoggedIn(true);
+        setUserData(data.user);
+        console.log(userData)
       } else {
-        setLoggedIn(false);
-        toast.error(data.message);
+        toast.error("Error in fetching user");
       }
     } catch (error) {
-      console.log("Error fetching user data:", error.message);
-      setLoggedIn(false);
-      toast.error(error.response?.data?.message || "Failed to fetch user data");
+      toast.error("An error occurred while fetching user data");
+      console.error(error);
     }
   };
 
-  // Effect to fetch user data when the token changes
   useEffect(() => {
-    if (token) getUserData();
+    if (token) {
+      fetchUser();
+    }
   }, [token]);
 
   const value = {
@@ -55,9 +76,10 @@ export const AppContextProvider = (props) => {
     setLoggedIn,
     userData,
     setUserData,
-    getUserData,
+    setUserData,
     token,
     setToken,
+    fetchUser
   };
 
   return (
