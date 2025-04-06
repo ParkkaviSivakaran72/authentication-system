@@ -11,12 +11,7 @@ const Header = () => {
   
 
   // Logout function
-  const handleLogout = () => {
-    localStorage.removeItem("uToken");
-    localStorage.removeItem("username");
-    setToken(null);
-    navigate("/login");
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-800 text-white flex flex-col items-center justify-center">
@@ -27,7 +22,8 @@ const Header = () => {
           className="rounded-full mb-4 w-20 h-20"
         />
         <h1 className="text-2xl font-bold">
-          {userData ? `Hello, ${userData.userName} 👋` : "Loading..."}
+          
+          {userData ? `Hello, ${userData.userName} 👋` : "Hello, Developer!"}
         </h1>
         <h2 className="text-xl font-bold">Welcome to our web page!</h2>
         <p className="text-gray-300">
@@ -39,14 +35,7 @@ const Header = () => {
         >
           Get started
         </button>
-        {userData && (
-          <button
-            className="mt-4 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        )}
+        
       </div>
     </div>
   );
