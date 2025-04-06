@@ -13,13 +13,14 @@ export const AppContextProvider = (props) => {
   // Sync token from localStorage whenever it changes
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
+    // console.log(userData)
     if (storedToken) {
       setToken(storedToken);
       setLoggedIn(true);
     } else {
       setLoggedIn(false);
     }
-  }, []);
+  }, [userData]);
 
   // const getAuthUser = async () => {
   //   try {
@@ -53,8 +54,9 @@ export const AppContextProvider = (props) => {
       });
 
       if (data.success) {
+        // console.log(data.user)
         setUserData(data.user);
-        console.log(userData)
+        // console.log(userData)
       } else {
         toast.error("Error in fetching user");
       }
@@ -76,7 +78,7 @@ export const AppContextProvider = (props) => {
     setLoggedIn,
     userData,
     setUserData,
-    setUserData,
+    
     token,
     setToken,
     fetchUser

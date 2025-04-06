@@ -101,7 +101,7 @@ export const verificationOTP = async (req,res) => {
         text:`Successfully get your verification OTP.your OTP is ${otp} `
     }
     await transporter.sendMail(mailOption);
-    return res.json({success:true,message:"Verification sent successfully!"})
+    return res.json({success:true,message:"Verification sent successfully!",otp})
     } catch (error) {
         console.log(error)
         return res.json({success:false,message:error})
@@ -131,7 +131,7 @@ export const verifyEmail = async (req,res) => {
         user.verifyOTP = "";
         user.verifyOTPexpiresAt = 0;
         await user.save();
-        return res.json({success:true,message:"Email verification successfully!"})
+        return res.json({success:true,message:"Email verification successfully!",otp})
     } catch (error) {
         console.log(error)
         return res.json({success:false,message:error.message})
