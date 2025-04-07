@@ -2,7 +2,7 @@ import userModel from "../models/userModel.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import transporter from "../config/nodemailer.js";
-
+import { reset_password } from "../config/emailTemplate.js";
 
 export const register = async (req, res) => {
     const { userName, email, password, confirmPassword } = req.body;
@@ -167,7 +167,9 @@ export const resetOTP = async (req,res) => {
             from : process.env.SENDER_EMAIL,
             to : user.email,
             subject : "Your OTP to Reset your account password! ",
-            text : `Your otp is ready to reset your password. Your OTP is ${otp}`
+            // text : `Your otp is ready to reset your password. Your OTP is ${otp}`
+            html:reset_password
+            
         }
 
         await transporter.sendMail(mailOption);
