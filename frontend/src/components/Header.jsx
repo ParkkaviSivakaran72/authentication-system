@@ -11,7 +11,12 @@ const Header = () => {
   
 
   // Logout function
-  
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    setToken(null);
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen bg-gray-800 text-white flex flex-col items-center justify-center">
@@ -35,6 +40,7 @@ const Header = () => {
         >
           Get started
         </button>
+        <div className="px-4 py-2 hover:bg-gray-700 cursor-pointer" onClick={handleLogout}>Logout</div>
         
       </div>
     </div>

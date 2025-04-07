@@ -35,19 +35,28 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     const OTPArray = inputRefs.current.map(e => e.value)
     const otp = OTPArray.join('');
-    console.log(otp)
-    const {data} = await axios.post(`${backend_url}/api/user/verify-email`,{otp},{
+    // console.log(otp)
+    const data = {
+      otp:otp,
+      userId:userData._id
+      
+    }
+    const {data:response} = await axios.post(`${backend_url}/api/user/verify-email`,data,{
+      
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
       withCredentials:true
     })
     
-    console.log(data)
-    if(data.success){
+    // console.log(data)
+    if(response.success){
       navigate('/');
       fetchUser();
-      toast.success(data.message)
+      toast.success(response.message)
     }
     else{
-      toast.error(data.message)
+      toast.error(response.message)
     }
   } catch (error) {
     toast.error(error.message)

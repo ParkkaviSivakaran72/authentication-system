@@ -9,11 +9,12 @@ export const AppContextProvider = (props) => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
+  axios.defaults.withCredentials = true;
 
   // Sync token from localStorage whenever it changes
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
-    // console.log(userData)
+    console.log(userData)
     if (storedToken) {
       setToken(storedToken);
       setLoggedIn(true);
@@ -52,23 +53,25 @@ export const AppContextProvider = (props) => {
           Authorization: `Bearer ${token}`, // Add space after Bearer
         },
       });
-
+      console.log(data)
       if (data.success) {
-        // console.log(data.user)
+        console.log(data.user)
         setUserData(data.user);
         // console.log(userData)
       } else {
         toast.error("Error in fetching user");
       }
     } catch (error) {
+      console.log(error);
       toast.error("An error occurred while fetching user data");
-      console.error(error);
+      
     }
   };
 
   useEffect(() => {
     if (token) {
       fetchUser();
+      console.log(token)
     }
   }, [token]);
 

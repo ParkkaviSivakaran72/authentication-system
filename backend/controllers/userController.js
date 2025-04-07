@@ -120,7 +120,7 @@ export const verifyEmail = async (req,res) => {
         if(!user){
             return res.json({success:false,message:"User not found!"})
         }
-        if(user.verifyOTP==='' || user.verifyOTP != (String)(otp)){
+        if(user.verifyOTP==='' || user.verifyOTP !== (String)(otp)){
             return res.json({success:false,message:"OTP is Invalid!"})
         }
         
@@ -131,7 +131,7 @@ export const verifyEmail = async (req,res) => {
         user.verifyOTP = "";
         user.verifyOTPexpiresAt = 0;
         await user.save();
-        return res.json({success:true,message:"Email verification successfully!",otp})
+        return res.json({success:true,message:"Email verification successfully!"})
     } catch (error) {
         console.log(error)
         return res.json({success:false,message:error.message})
