@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "../context/Appcontext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -63,6 +63,10 @@ const handleSubmit = async (e) => {
   }
   
 }
+
+useEffect(() => {
+  userData && userData.isVerified && navigate('/')
+},[userData])
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-800">
