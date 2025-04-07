@@ -52,7 +52,8 @@ export const login = async (req, res) => {
         if (!user) {
             return res.json({ success: false, message: "Email is Invalid!" });
         }
-        const isMatch = bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
+        console.log(isMatch)
         if (!isMatch) {
             return res.json({ success: false, message: "Password is Invalid!" });
         }
@@ -111,7 +112,7 @@ export const verificationOTP = async (req,res) => {
 export const verifyEmail = async (req,res) => {
     
     const {otp} = req.body;
-    console.log(otp)
+    // console.log(otp)
     if(!req.body.userId || !otp){
         return res.json({success:false,message:"userId or otp does not exist"})
     }
@@ -178,9 +179,33 @@ export const resetOTP = async (req,res) => {
     }
 }
 
+export const resetOtpCheck = async (req,res) => {
+    try {
+        const {email,otp} = req.body;
+        if(!email || !otp){
+            return res.json({success:false,message:"Email and OTP are required!"})
+        }
+        const user = await userModel.findOne({email});
+        if(!user){
+            return res.json({success:false,message:"User not found!"})
+        }
+        if(user.resetOTP === "" || user.resetOTP !== otp){
+            return res.json({success:false,message:"OTP is Invalid!"})
+
+        }
+        if(user.resetOTPexpireAt < Date.now()){
+            return res.json({success:false,message:"OTP is expired!"})
+
+        }
+        return res.json({success:true,message:"OTP is correct",otp})
+    } catch (error) {
+        return res.json({success:false,message:error.message})
+    }
+}
+
 export const resetPassword  = async (req,res) => {
-    const {email, otp, newPassword,confirmNewPassword} = req.body;
-    if(!email || !otp || !newPassword){
+    const {email, newPassword,confirmNewPassword} = req.body;
+    if(!email  || !newPassword || !confirmNewPassword){
         res.json({success:false,message:"email,otp,newPassword are required"});
 
     }
@@ -189,14 +214,7 @@ export const resetPassword  = async (req,res) => {
         if(!user){
             return res.json({success:false,message:"User not found!"})
         }
-        if(user.resetOTP === "" || user.resetOTP === otp){
-            return res.json({success:false,message:"OTP is Invalid!"})
-
-        }
-        if(user.resetOTPexpireAt < Date.now()){
-            return res.json({success:false,message:"OTP is expired!"})
-
-        }
+        
         if(newPassword !== confirmNewPassword){
             return res.json({success:false,message:"Confirm new password is mismatch with new password!"})
         }

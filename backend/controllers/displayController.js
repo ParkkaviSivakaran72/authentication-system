@@ -7,7 +7,7 @@ export const getUserData = async (req, res) => {
 
         // Find the user by ID, excluding the password field
         const user = await userModel.findById(req.body.userId);
-        console.log(req.body.userId)
+        // console.log(req.body.userId)
 
         // Check if the user was found
         if (!user) {

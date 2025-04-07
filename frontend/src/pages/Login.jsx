@@ -29,6 +29,7 @@ const Login = () => {
         setToken(response.token);
         console.log(response)
         navigate("/"); // Redirect to home
+        toast.success(response.message)
       } else {
         toast.error(response.message);
       }
