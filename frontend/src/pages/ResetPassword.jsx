@@ -19,6 +19,7 @@ const ResetPassword = () => {
       if(response.success){
         navigate('/reset-password-setup');
         toast.success(response.message);
+        localStorage.setItem('email',response.email)
 
       }
       else{

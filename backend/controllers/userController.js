@@ -170,7 +170,7 @@ export const resetOTP = async (req,res) => {
         }
 
         await transporter.sendMail(mailOption);
-        return res.json({success:true,message:"Reset OTP is sent successfully."})
+        return res.json({success:true,message:"Reset OTP is sent successfully.",email})
 
         
     } catch (error) {
